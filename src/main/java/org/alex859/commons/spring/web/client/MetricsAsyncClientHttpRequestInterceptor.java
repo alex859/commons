@@ -46,36 +46,36 @@ public class MetricsAsyncClientHttpRequestInterceptor implements AsyncClientHttp
     private final Function<String, MetricNames> metricsNameProvider;
 
     /**
-     * Creates a new {@link MetricsAsyncClientHttpRequestInterceptor} for the given service using the provided
+     * Creates a new {@link MetricsAsyncClientHttpRequestInterceptor} for the given prefix using the provided
      * {@link MetricRegistry}.
      *
-     * @param service        Name of the service the request is sent to.
+     * @param prefix        Prefix for metrics.
      * @param metricRegistry The metrics registry.
      */
-    public MetricsAsyncClientHttpRequestInterceptor(final String service, final MetricRegistry metricRegistry)
+    public MetricsAsyncClientHttpRequestInterceptor(final String prefix, final MetricRegistry metricRegistry)
     {
         this.metricRegistry = Objects.requireNonNull(metricRegistry, "MetricRegistry cannot be null");
-        Objects.requireNonNull(service, "Service name cannot be null");
+        Objects.requireNonNull(prefix, "Prefic name cannot be null");
 
-        final MetricNames metricNames = new MetricNames(service);
+        final MetricNames metricNames = new MetricNames(prefix);
         metricsNameProvider = uriPath -> metricNames;
     }
 
     /**
      * Creates a new {@link MetricsAsyncClientHttpRequestInterceptor} using the provided {@link MetricRegistry} for
-     * more than one service. A mapping from service host to service name will be used to get the metric names.
+     * more than one service. A mapping from service host to service name will be used to get metric names.
      *
-     * @param hostToServiceMap A mapping from service host to service name.
+     * @param hostToPrefixMap A mapping from service host to the metric prefix.
      * @param metricRegistry The metrics registry.
      */
-    public MetricsAsyncClientHttpRequestInterceptor(final Map<String, String> hostToServiceMap, final MetricRegistry
+    public MetricsAsyncClientHttpRequestInterceptor(final Map<String, String> hostToPrefixMap, final MetricRegistry
             metricRegistry)
     {
         this.metricRegistry = Objects.requireNonNull(metricRegistry, "MetricRegistry cannot be null");
-        Objects.requireNonNull(hostToServiceMap, "URLToService map cannot be null");
+        Objects.requireNonNull(hostToPrefixMap, "URLToPrefix map cannot be null");
 
-        final Map<String, MetricNames> urlToMetricNamesMap = new HashMap<>(hostToServiceMap.size());
-        hostToServiceMap.forEach((url, service) -> urlToMetricNamesMap.put(url, new MetricNames(service)));
+        final Map<String, MetricNames> urlToMetricNamesMap = new HashMap<>(hostToPrefixMap.size());
+        hostToPrefixMap.forEach((url, prefix) -> urlToMetricNamesMap.put(url, new MetricNames(prefix)));
 
         metricsNameProvider = urlToMetricNamesMap::get;
     }
@@ -138,12 +138,12 @@ public class MetricsAsyncClientHttpRequestInterceptor implements AsyncClientHttp
         private final String failure;
         private final String status;
 
-        private MetricNames(final String service)
+        private MetricNames(final String prefix)
         {
-            this.total = String.join(METRIC_DELIMITER, service, REQUESTS, TOTAL);
-            this.success = String.join(METRIC_DELIMITER, service, REQUESTS, SUCCESSFUL);
-            this.failure = String.join(METRIC_DELIMITER, service, REQUESTS, FAILED);
-            this.status = String.join(METRIC_DELIMITER, service, REQUESTS, STATUS);
+            this.total = String.join(METRIC_DELIMITER, prefix, REQUESTS, TOTAL);
+            this.success = String.join(METRIC_DELIMITER, prefix, REQUESTS, SUCCESSFUL);
+            this.failure = String.join(METRIC_DELIMITER, prefix, REQUESTS, FAILED);
+            this.status = String.join(METRIC_DELIMITER, prefix, REQUESTS, STATUS);
         }
     }
 }
