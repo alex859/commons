@@ -14,7 +14,7 @@ dependencies {
     compile("org.springframework:spring-web:$springVersion")
     compile("io.dropwizard.metrics:metrics-core:+")
     compile("org.slf4j:slf4j-api:+")
-    compile("org.springframework.boot:spring-boot-starter:1.4.1.RELEASE")
+    compile("net.javacrumbs.future-converter:future-converter-spring-java8:$futureConverterVersion")
 
     testCompile("junit:junit:+")
 }
