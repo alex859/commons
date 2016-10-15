@@ -27,4 +27,10 @@ public class Validator<T> implements UnaryOperator<T>
         throw exceptionSupplier.get();
 
     }
+
+    public static <T> Validator<T> validate(final Predicate<T> predicate, final Supplier<? extends RuntimeException>
+            exceptionSupplier)
+    {
+        return new Validator<>(predicate, exceptionSupplier);
+    }
 }
