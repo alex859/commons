@@ -17,4 +17,5 @@ dependencies {
     compile("net.javacrumbs.future-converter:future-converter-spring-java8:$futureConverterVersion")
 
     testCompile("junit:junit:+")
+    testCompile("org.mockito:mockito-all:+")
 }
