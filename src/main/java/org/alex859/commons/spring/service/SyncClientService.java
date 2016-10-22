@@ -1,16 +1,20 @@
-package org.alex859.commons.integration;
+package org.alex859.commons.spring.service;
 
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 import java.util.function.Function;
 
 /**
  * Defines the action of sending a {@link RequestEntity} to a remote system synchronously.
- * The {@link SyncClientService#withRestTemplate(RestTemplate)} can be used to get a
- * {@link SyncClientServiceBuilder} implementation based on the {@link RestTemplate}.
+ * The {@link SyncClientService#forResponseType(Class)} method can be used to get a
+ * {@link SyncClientServiceBuilder} implementation for the specified response type {@link Class}.
+ * <p>
+ * For example:
+ * <code>
+ * SyncClientService<String> service = SyncClientService.forResponseType(String.class).withRestTemplate(restTemplate);
+ * </code>
  *
  * @param <RESPONSE> The response type.
  */
@@ -32,15 +36,15 @@ public interface SyncClientService<RESPONSE> extends Function<RequestEntity<?>, 
     }
 
     /**
-     * Returns an {@link SyncClientServiceBuilder} based on the provided {@link RestTemplate}
+     * Returns an {@link SyncClientServiceBuilder} for the provided response {@link Class} type.
      *
-     * @param restTemplate The {@link RestTemplate} to use.
-     * @param <T>          The response type
+     * @param responseType The response {@link Class} type to use.
+     * @param <T>          The response type.
      * @return The newly created {@link AsyncClientServiceBuilder}.
      */
-    static <T> SyncClientServiceBuilder<T> withRestTemplate(final RestTemplate restTemplate)
+    static <T> SyncClientServiceBuilder<T> forResponseType(final Class<T> responseType)
     {
-        return responseType ->
+        return restTemplate ->
                 requestEntity ->
                 {
                     Objects.requireNonNull(requestEntity, "Request Entity cannot be null");

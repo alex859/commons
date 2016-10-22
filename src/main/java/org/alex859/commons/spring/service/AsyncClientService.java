@@ -1,9 +1,8 @@
-package org.alex859.commons.integration;
+package org.alex859.commons.spring.service;
 
 import net.javacrumbs.futureconverter.springjava.FutureConverter;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.AsyncRestTemplate;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -11,14 +10,18 @@ import java.util.function.Function;
 
 /**
  * Defines the action of sending a {@link RequestEntity} to a remote system asynchronously.
- * The {@link AsyncClientService#withRestTemplate(AsyncRestTemplate)} can be used to get a
- * {@link AsyncClientServiceBuilder} implementation based on the {@link AsyncRestTemplate}.
+ * The {@link AsyncClientService#forResponseType(Class)} can be used to get a
+ * {@link SyncClientServiceBuilder} implementation for the specified response type {@link Class}.
+ * <p>
+ * For example:
+ * <code>
+ * AsyncClientService<String> service = AsyncClientService.forResponseType(String.class).withRestTemplate(null);
+ * </code>
  *
  * @param <RESPONSE> The response type.
  */
 @FunctionalInterface
-public interface AsyncClientService<RESPONSE> extends Function<RequestEntity<?>,
-        CompletableFuture<ResponseEntity<RESPONSE>>>
+public interface AsyncClientService<RESPONSE> extends Function<RequestEntity<?>, CompletableFuture<ResponseEntity<RESPONSE>>>
 {
     /**
      * Sends the given {@link RequestEntity}.
@@ -35,16 +38,15 @@ public interface AsyncClientService<RESPONSE> extends Function<RequestEntity<?>,
     }
 
     /**
-     * Returns an {@link AsyncClientServiceBuilder} based on the provided {@link AsyncRestTemplate}
+     * Returns an {@link AsyncClientServiceBuilder} for the provided response {@link Class} type.
      *
-     * @param asyncRestTemplate The {@link AsyncRestTemplate} to use.
-     * @param <T> The response type.
-     *
+     * @param responseType The response {@link Class} type to use.
+     * @param <T>          The response type
      * @return The newly created {@link AsyncClientServiceBuilder}.
      */
-    static <T> AsyncClientServiceBuilder<T> withRestTemplate(final AsyncRestTemplate asyncRestTemplate)
+    static <T> AsyncClientServiceBuilder<T> forResponseType(final Class<T> responseType)
     {
-        return responseType ->
+        return asyncRestTemplate ->
                 requestEntity ->
                 {
                     Objects.requireNonNull(requestEntity, "Request Entity cannot be null");
