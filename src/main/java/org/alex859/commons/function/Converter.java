@@ -50,6 +50,7 @@ public interface Converter<INPUT, OUTPUT> extends Function<INPUT, OUTPUT>
 
     /**
      * Adds a population step to the given {@link Converter}.
+     * A partially applied {@link Populator} can be can from {@link Populator#withSource(Object)}.
      *
      * @param populator The partial populator to run after this converter.
      * @return A new {@link Converter} that also runs the provided {@link Populator}.
@@ -64,21 +65,6 @@ public interface Converter<INPUT, OUTPUT> extends Function<INPUT, OUTPUT>
 
             return result;
         };
-    }
-
-    /**
-     * Adds a population step to the given {@link Converter}. The additional step will be available in the future:
-     * the returned {@link Converter} will convert the source into a {@link CompletableFuture}.
-     *
-     * @param futurePopulator The future populator to run after this converter.
-     * @return A new {@link Converter} that also runs the provided {@link Populator}.
-     */
-    default Converter<INPUT, CompletableFuture<OUTPUT>> populatingWithFuture(final CompletableFuture<Void> futurePopulator)
-    {
-        Objects.requireNonNull(futurePopulator, "Future consumer cannot be null");
-        return source ->
-                CompletableFuture.supplyAsync(() -> apply(source))
-                        .thenCompose(o -> futurePopulator.thenApply(aVoid -> o));
     }
 
     /**

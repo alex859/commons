@@ -2,6 +2,7 @@ package org.alex859.commons.function;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -58,6 +59,25 @@ public interface Populator<S, T> extends BiConsumer<S, T>
                 sourceFuture.thenAccept(
                         source ->
                                 populate(source, target)
+                );
+    }
+
+    /**
+     * Creates a "future" {@link Consumer} (defined as {@link Function} T -> {@link CompletableFuture})able to
+     * populate a target object. The source object will be available in the future.
+     *
+     * @param sourceFuture The source object available in future.
+     * @param executor Where to execute the population.
+     * @return The partially applied populator.
+     */
+    default Function<T, CompletableFuture<Void>> withFutureSource(final CompletableFuture<S> sourceFuture, final
+    Executor executor)
+    {
+        Objects.requireNonNull(sourceFuture, "Source future cannot be null.");
+        return target ->
+                sourceFuture.thenAcceptAsync(
+                        source ->
+                                populate(source, target), executor
                 );
     }
 
